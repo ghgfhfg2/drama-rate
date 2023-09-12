@@ -4,19 +4,20 @@ import styled from "styled-components";
 import Link from "next/link";
 import { Image, useToast } from "@chakra-ui/react";
 import GoogleAd from "./GoogleAd";
+import { AiOutlineCalculator } from "react-icons/ai";
 
 const HeaderTop = styled.div`
   width: 100%;
   background: #fff;
+  padding-top: 5px;
   box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
   font-size: 12px;
-  padding-right: 1rem;
   height: 60px;
   display: flex;
   position: sticky;
   top: 0;
   z-index: 100;
-  justify-content: space-between;
+  justify-content: center;
   .left {
     display: flex;
     align-items: center;
@@ -28,12 +29,22 @@ const HeaderTop = styled.div`
     font-family: "Tenada", "NanumGothic", sans-serif;
     cursor: pointer;
     display: flex;
-    height: 40px;
     width: auto;
+    color: #fff;
+    background: #4a63e9;
+    padding: 0 1rem;
+    border-radius: 5px;
+    padding-top: 8px;
     font-size: 24px;
     align-items: center;
     justify-content: center;
-    padding: 0 1rem;
+    margin-bottom: 5px;
+    .icon {
+      margin-left: 7px;
+      font-size: 33px;
+      position: relative;
+      bottom: 4px;
+    }
     img {
       max-height: 30px;
     }
@@ -98,8 +109,9 @@ function Header({ logoImg }) {
         <div className="left">
           <div className="logo_box">
             <div className="logo">
-              <Link href="/">시주풀이 AI</Link>
-              <h1 className="hidden">시로 풀어보는 ai 사주풀이</h1>
+              <Link href="/">탄생수 계산기</Link>
+              <AiOutlineCalculator className="icon" />
+              <h1 className="hidden">탄생수로 알아보는 나의 유형</h1>
             </div>
           </div>
           {/* <ul className="menu">

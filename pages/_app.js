@@ -59,11 +59,6 @@ function App({ Component, pageProps }) {
 
   return (
     <>
-      <HiddenText>
-        <h1>텍스트 특수문자 이모티콘</h1>
-        <h2>특수문자 이모티콘 모음 - Text Emoticon collection</h2>
-        <h3>이모티콘,특수기호,인싸티콘,특수문자,텍대,텍스트</h3>
-      </HiddenText>
       <ChakraProvider>
         {/* {isLoading ? (
           <>

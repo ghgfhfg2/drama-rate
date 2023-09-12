@@ -5,16 +5,11 @@ class MyDocument extends Document {
     return (
       <Html lang="ko">
         <Head>
-          <title>
-            특수문자(텍스트) 이모티콘 모음 - Text Emoticon collection
-          </title>
-          <meta
-            name="keywords"
-            content="Text,Emoticon,Text Emoticon,Kaomoji,Face Emoticon,Face,Instagram Emoticon,Lenny Face,Lenny,Symbol,Text Symbol,Artful,Face Type,Designed Text,이모티콘,특수기호,인싸티콘,특수문자,텍대,텍스트"
-          />
+          <title>탄생수 계산기 - 탄생수로 알아보는 나의 특징</title>
+          <meta name="keywords" content="탄생수,테스트,심리,성격,유형" />
           <meta
             name="description"
-            content="텍스트와 특수문자로 이루어진 이모티콘을 보다 쉽게 관리해 보세요.!"
+            content="탄생수로 알아보는 성격유형과 특징을 알아보세요!"
           />
           <meta
             name="viewport"
@@ -22,11 +17,11 @@ class MyDocument extends Document {
           />
           <meta
             property="og:site_name"
-            content="텍스트 이모티콘 모음 - Text Emoticon collection"
+            content="탄생수 계산기 - 탄생수로 알아보는 나의 특징"
           />
           <meta
             property="og:title"
-            content="텍스트 이모티콘 모음 - Text Emoticon collection"
+            content="탄생수 계산기 - 탄생수로 알아보는 나의 특징"
           />
           <meta property="og:url" content="https://emoticon.sooyadev.com/" />
           <meta property="og:type" content="website" />
