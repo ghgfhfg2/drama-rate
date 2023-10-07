@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   Button,
+  Skeleton,
   Flex,
   Input,
   Radio,
@@ -17,167 +18,371 @@ import { useForm } from "react-hook-form";
 import { selectDate } from "./SelectDb";
 import { useRouter } from "next/router";
 import styled from "styled-components";
-const MainComponent = styled.div`
-  .main_info {
-    padding: 1rem;
-    line-height: 1.7;
-    h2 {
-      color: #4a63e9;
-      font-size: 20px;
-      margin-top: 20px;
+import axios from "axios";
+import { CommonPopup } from "./CommonPop";
+import LineChartComponent from "./LineChartComponent";
+import { previousMonday, nextSunday, format, subDays, addDays } from "date-fns";
+import { FiChevronLeft } from "react-icons/fi";
+import { FiChevronRight } from "react-icons/fi";
+import Loading from "./Loading";
+
+const RateRank = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+  li {
+    &:nth-child(1),
+    &:nth-child(2),
+    &:nth-child(3),
+    &:nth-child(4),
+    &:nth-child(5) {
+      font-size: 18px;
+      font-weight: bold;
     }
-    span {
-      font-weight: 600;
-      font-size: 1.5rem;
-      flex-shrink: 0;
+    &:nth-child(1) {
+      background: #111;
+      color: #fff;
+    }
+    display: flex;
+    gap: 10px;
+    border-radius: 8px;
+    padding: 10px 15px;
+    transition: all 0.2s;
+    cursor: pointer;
+    &:hover {
+      box-shadow: 0 0 13px rgba(0, 0, 0, 0.2);
+      padding: 10px 20px;
+      transform: scale(1.03, 1.1);
+    }
+    .rate {
+      margin-left: auto;
     }
   }
-  .form {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    margin: 30px 0 50px 0;
-    padding: 3rem;
-    font-size: 17px;
-    select {
-      height: 42px;
-      font-size: 17px;
-      padding: 0 2rem;
+`;
+const RatePop = styled(CommonPopup)`
+  .con_box {
+    .btn_close {
+      position: absolute;
+      right: 15px;
+      top: 15px;
     }
-    .btn_calc {
-      width: 100%;
-      height: 50px;
+    h3 {
+      font-size: 22px;
+      text-align: center;
+    }
+    .casting {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      dt {
+        font-weight: 600;
+      }
+      dd {
+        display: flex;
+        flex-wrap: wrap;
+        span {
+          margin: 0 3px;
+        }
+      }
+    }
+    width: 90%;
+    max-width: 700px;
+    height: auto;
+  }
+  @media all and (max-width: 400px) {
+    .con_box {
+      h3 {
+        font-size: 18px;
+      }
+    }
+  }
+`;
+
+const MainComponent = styled.div`
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1rem;
+  padding-bottom: 100px;
+  .main_info_box {
+    h2 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    padding: 15px;
+    background: #f1f1f1;
+    border-radius: 6px;
+    margin-bottom: 20px;
+  }
+  .date_wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    .date_box {
+      font-size: 16px;
     }
   }
 `;
 
 export default function Main() {
+  const apiUrl = "https://port-0-sy-cheerio-2rrqq2blmlvy0fh.sel5.cloudtype.app";
   const router = useRouter();
   const toast = useToast();
-  const [sexState, setSexState] = useState();
-  const {
-    handleSubmit,
-    register,
-    resetField,
-    formState: { errors, isSubmitting },
-  } = useForm();
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectDb, setSelectDb] = useState();
+
   useEffect(() => {
-    setSelectDb(selectDate());
+    if (router.route != "/main") {
+      router.push("/main");
+    }
   }, []);
 
-  const onSubmit = (values) => {
-    let date = `${values.year}${values.month}${values.day}`;
-    const sumCalc = (num) => {
-      let arr = String(num).split("");
-      let tempSum = 0;
-      for (let i = 0; i < arr.length; i++) {
-        tempSum += 1 * arr[i];
-      }
-      return tempSum;
-    };
-    while (date >= 10) {
-      date = sumCalc(date);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [listData, setlistData] = useState();
+
+  const [curDate, setCurDate] = useState(new Date());
+  const [dateRange, setDateRange] = useState();
+
+  const prevWeek = (e) => {
+    setCurDate(subDays(curDate, 7));
+  };
+  const nextWeek = () => {
+    if (format(curDate, "yyyyMMdd") == format(new Date(), "yyyyMMdd")) {
+      toast({
+        description: "가장 최신 데이터 입니다.",
+        status: "info",
+        duration: 1000,
+        isClosable: true,
+      });
+      return;
+    } else {
+      setCurDate(addDays(curDate, 7));
     }
-    router.push(`/result?id=${date}`);
+  };
+
+  useEffect(() => {
+    if (!curDate) return;
+    let monday = previousMonday(previousMonday(curDate));
+    let sunday = nextSunday(monday);
+    const month = monday.getMonth() + 1;
+    const date = monday.getDate();
+    setDateRange({
+      start: format(monday, "yyyy.MM.dd"),
+      end: format(sunday, "yyyy.MM.dd"),
+    });
+    const getRank = async () => {
+      setIsLoading(true);
+      await axios
+        .get(`${apiUrl}/getRank?month=${month}&date=${date}`)
+        .then((res) => {
+          let data = JSON.parse(res.data.list);
+          data = data.sort((a, b) => {
+            return (
+              b.rate.substr(0, b.rate.length - 1) -
+              a.rate.substr(0, a.rate.length - 1)
+            );
+          });
+          data = data.map((el, idx) => {
+            el.rank = idx + 1;
+            return el;
+          });
+          setlistData(data);
+        });
+      setIsLoading(false);
+    };
+    getRank();
+  }, [curDate]);
+
+  const [allTargetData, setAllTargetData] = useState({});
+  const [targetData, setTargetData] = useState();
+  const getRateAll = (el) => {
+    if (allTargetData[`data_${el.rank}`]) {
+      setTargetData(allTargetData[`data_${el.rank}`]);
+      onPop();
+    } else {
+      onPop();
+      axios.get(`${apiUrl}/getRateAll?title=${el.title}`).then((res) => {
+        if (!res.data) {
+          toast({
+            description: "시청률 추이가 없는 드라마 입니다.",
+            status: "info",
+            duration: 1000,
+            isClosable: true,
+          });
+          return;
+        }
+        let list = JSON.parse(res.data.list);
+        list = list.map((el) => {
+          if (el.num) {
+            const num = el.num.split("회");
+            el.num = num[0] + "회";
+          }
+          return el;
+        });
+        list.reverse();
+        const data = {
+          info: {
+            ...el,
+            casting: res.data.casting.slice(0, 5),
+          },
+          list,
+        };
+        setAllTargetData((prev) => {
+          prev[`data_${el.rank}`] = data;
+          return prev;
+        });
+        setTargetData(data);
+      });
+    }
+  };
+
+  const [isPop, setIsPop] = useState(false);
+  const onPop = () => {
+    setIsPop(true);
+  };
+  const closePop = () => {
+    setTargetData("");
+    setIsPop(false);
   };
 
   return (
     <>
-      <Head>
-        <title>탄생수 계산기 - 탄생수로 알아보는 나의 유형</title>
-      </Head>
       <MainComponent>
         <div className="content_box">
           <GoogleAd />
-          {isLoading && (
-            <Spinner
-              style={{
-                position: "fixed",
-                left: "50%",
-                top: "50%",
-                transform: "translate(-50%,-50%)",
-              }}
-            />
-          )}
-          {!isLoading && selectDb && (
-            <>
-              <div className="main_info">
-                <h2>탄생수란?</h2>
-                <p>
-                  탄생수는 여러분의 생년월일을 기반으로 계산되는 숫자로서,
-                  개개인의 성격, 경향성, 미래의 가능성을 예측하는 데 사용되는
-                  것을 말해요.
-                </p>
-                <h2>탄생수 계산법</h2>
-                <p>
-                  1. 먼저, 태어난 연도의 각 숫자를 모두 더합니다. 예를 들어,
-                  1995년에 태어났다면 1 + 9 + 9 + 5 = 24가 됩니다.
-                  <br />
-                  2. 이렇게 얻어진 숫자를 다시 각 자리의 숫자들을 더해 한 자리
-                  숫자로 만듭니다. 위의 예에서 24를 다시 계산하면 2 + 4 = 6이
-                  됩니다.
-                  <br />
-                  3. 이제 이 한 자리 숫자가 여러분의 탄생수입니다!
-                </p>
+          <div className="main_info_box">
+            <h2 className="p-font">K-드라마 시청률 안내</h2>
+            <p>
+              - 방송사별 드라마의 시청률을 통합하여 한눈에 시청률을 비교해 볼 수
+              있습니다.
+              <br />- 드라마를 선택하면 주요 출연진과 시청률 추이를 볼 수
+              있습니다.
+              <br />- 시청률 추이의 경우 최근 50회차 까지만 제공합니다.
+              <br />- 주간 시청률이므로 모든 드마라가 최신화 시청률은 아닐 수
+              있습니다.(드라마 선택해서 보이는 시청률 추이에서 최신화 시청률
+              확인이 가능합니다.)
+            </p>
+          </div>
+          {dateRange && (
+            <div className="date_wrap">
+              <Button onClick={prevWeek} disabled={isLoading}>
+                <FiChevronLeft />
+              </Button>
+              <div className="date_box">
+                <span className="start">{dateRange.start}</span>
+                <span style={{ margin: "0 4px" }}>~</span>
+                <span className="end">{dateRange.end}</span>
               </div>
-              <form
-                className="form"
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-                onSubmit={handleSubmit(onSubmit)}
-              >
-                <Flex mb={4} justifyContent="center">
-                  <Flex align="center" mr={5}>
-                    <Select size="lg" defaultValue={1990} {...register("year")}>
-                      {selectDb.yearArr.map((el) => (
-                        <>
-                          <option value={el}>{el}</option>
-                        </>
-                      ))}
-                    </Select>
-                    <Text ml={2}>년</Text>
-                  </Flex>
-                  <Flex align="center" mr={5}>
-                    <Select size="lg" defaultValue={1} {...register("month")}>
-                      {selectDb.monthArr.map((el) => (
-                        <>
-                          <option value={el}>{el}</option>
-                        </>
-                      ))}
-                    </Select>
-                    <Text ml={2}>월</Text>
-                  </Flex>
-                  <Flex align="center">
-                    <Select size="lg" defaultValue={1} {...register("day")}>
-                      {selectDb.dayArr.map((el) => (
-                        <>
-                          <option value={el}>{el}</option>
-                        </>
-                      ))}
-                    </Select>
-                    <Text ml={2}>일</Text>
-                  </Flex>
-                </Flex>
-                <Flex justifyContent="center">
-                  <Button
-                    colorScheme="blue"
-                    className="btn_calc"
-                    size="lg"
-                    type="submit"
-                  >
-                    해당 날짜의 탄생수 알아보기
-                  </Button>
-                </Flex>
-              </form>
+              <Button onClick={nextWeek} disabled={isLoading}>
+                <FiChevronRight />
+              </Button>
+            </div>
+          )}
+
+          {isLoading ? (
+            <Stack mb={20}>
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+              <Skeleton height="50px" />
+            </Stack>
+          ) : (
+            <>
+              {listData && (
+                <>
+                  <RateRank>
+                    {listData.map((el) => (
+                      <li
+                        key={el.rank}
+                        onClick={() => {
+                          getRateAll(el);
+                        }}
+                      >
+                        <span>{el.rank}</span>
+                        <span>{el.title}</span>
+                        <span>{el.ch}</span>
+                        <span className="rate">{el.rate}</span>
+                      </li>
+                    ))}
+                  </RateRank>
+                </>
+              )}
             </>
           )}
+
+          <div className="main_info_box">
+            <h2 className="p-font">K-드라마 시청률 제작동기</h2>
+            <div>
+              세상에 드라마는 많고 시간은 부족하다보니 개인적으로 드라마를
+              고르는 기준이 생겼습니다.
+              <div style={{ margin: "5px 0", fontWeight: "600" }}>
+                첫쨰, 현재 방영중인 드라마들 중 상위권의 시청률 이어야 한다.
+                <br />
+                둘째, 시청률 추이가 우상향 중이어야 한다.
+              </div>
+              저와 비슷한 기준점으로 드라마를 고르는 분들에게 도움이 될 수
+              있을것 같아 사이트를 개발하게 되었습니다.
+            </div>
+          </div>
         </div>
       </MainComponent>
+      {isPop && (
+        <RatePop closePop={closePop}>
+          <div className="con_box">
+            <Button onClick={closePop} className="btn_close">
+              X
+            </Button>
+            {targetData ? (
+              <>
+                <h3 className="p-font">
+                  {targetData.info.title} - {targetData.info.ch}
+                </h3>
+                {targetData.info?.casting && (
+                  <>
+                    <dl className="casting">
+                      <dt>주요 출연진</dt>
+                      <dd>
+                        {targetData.info.casting.map((el) => (
+                          <>
+                            <span>{el}</span>
+                          </>
+                        ))}
+                      </dd>
+                    </dl>
+                  </>
+                )}
+                {targetData.list && (
+                  <LineChartComponent data={targetData.list} />
+                )}
+              </>
+            ) : (
+              <Flex
+                justifyContent="center"
+                alignItems="center"
+                style={{ width: "100%", height: "300px" }}
+              >
+                <Loading />
+              </Flex>
+            )}
+          </div>
+          <div className="bg" onClick={closePop}></div>
+        </RatePop>
+      )}
     </>
   );
 }

@@ -1,10 +1,17 @@
 @charset "utf-8";
-@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500&display=swap"); */
 @font-face {
-  font-family: "Tenada";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2210-2@1.0/Tenada.woff2")
+  font-family: "Pretendard-Regular";
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Giants-Bold";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-1@1.1/Giants-Bold.woff2")
     format("woff2");
-  font-weight: normal;
+  font-weight: 700;
   font-style: normal;
 }
 /* Common */
@@ -13,9 +20,12 @@ body {
   font-size: 14px;
   color: #555;
   line-height: 1.6;
-  font-family: "Tenada", "NanumGothic", sans-serif;
+  font-family: "Pretendard-Regular", "NanumGothic", sans-serif;
   font-weight: 400;
   letter-spacing: -1px;
+}
+.p-font {
+  font-family: "Giants-Bold";
 }
 body,
 div,
@@ -79,7 +89,7 @@ button,
 textarea,
 select,
 table {
-  font-family: "Tenada", "NanumGothic", sans-serif;
+  font-family: "Pretendard-Regular", "NanumGothic", sans-serif;
   font-size: 14px;
   box-sizing: border-box;
 }

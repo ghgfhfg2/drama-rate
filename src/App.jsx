@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import Layout from "./components/Layout";
 import Main from "./components/Main";
+import { useRouter } from "next/router";
 
 function App() {
   return (

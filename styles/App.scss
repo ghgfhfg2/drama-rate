@@ -7,7 +7,6 @@ body {
   @include flex($d: column, $a: stretch);
   min-height: 100vh;
   width: 100%;
-  max-width: 600px;
   margin: 0 auto;
   background: #fff;
 }

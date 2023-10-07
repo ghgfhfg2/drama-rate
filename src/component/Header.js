@@ -4,7 +4,6 @@ import styled from "styled-components";
 import Link from "next/link";
 import { Image, useToast } from "@chakra-ui/react";
 import GoogleAd from "./GoogleAd";
-import { AiOutlineCalculator } from "react-icons/ai";
 
 const HeaderTop = styled.div`
   width: 100%;
@@ -26,12 +25,10 @@ const HeaderTop = styled.div`
     width: 100%;
   }
   .logo {
-    font-family: "Tenada", "NanumGothic", sans-serif;
     cursor: pointer;
     display: flex;
     width: auto;
-    color: #fff;
-    background: #4a63e9;
+    color: #222;
     padding: 0 1rem;
     border-radius: 5px;
     padding-top: 8px;
@@ -108,10 +105,9 @@ function Header({ logoImg }) {
       <HeaderTop>
         <div className="left">
           <div className="logo_box">
-            <div className="logo">
-              <Link href="/">탄생수 계산기</Link>
-              <AiOutlineCalculator className="icon" />
-              <h1 className="hidden">탄생수로 알아보는 나의 유형</h1>
+            <div className="logo p-font">
+              <Link href="/">K-드라마 시청률</Link>
+              <h1 className="hidden">드라마 시청률 순위 추이</h1>
             </div>
           </div>
           {/* <ul className="menu">

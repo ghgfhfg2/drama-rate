@@ -5,11 +5,11 @@ class MyDocument extends Document {
     return (
       <Html lang="ko">
         <Head>
-          <title>탄생수 계산기 - 탄생수로 알아보는 나의 특징</title>
-          <meta name="keywords" content="탄생수,테스트,심리,성격,유형" />
+          <title>드라마 시청률 순위 모아보기</title>
+          <meta name="keywords" content="드라마,시청률,추이,방송사" />
           <meta
             name="description"
-            content="탄생수로 알아보는 성격유형과 특징을 알아보세요!"
+            content="드라마 시청률 순위와 드라마별 시청률 추이를 한눈에 알아 볼 수 있어요."
           />
           <meta
             name="viewport"
@@ -17,11 +17,11 @@ class MyDocument extends Document {
           />
           <meta
             property="og:site_name"
-            content="탄생수 계산기 - 탄생수로 알아보는 나의 특징"
+            content="드라마 시청률 순위 - 방송사 통합 드라마 시청률 순위와 추이"
           />
           <meta
             property="og:title"
-            content="탄생수 계산기 - 탄생수로 알아보는 나의 특징"
+            content="드라마 시청률 순위 - 방송사 통합 드라마 시청률 순위와 추이"
           />
           <meta property="og:url" content="https://emoticon.sooyadev.com/" />
           <meta property="og:type" content="website" />
