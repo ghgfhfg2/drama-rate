@@ -23,7 +23,10 @@ class MyDocument extends Document {
             property="og:title"
             content="드라마 시청률 순위 - 방송사 통합 드라마 시청률 순위와 추이"
           />
-          <meta property="og:url" content="https://emoticon.sooyadev.com/" />
+          <meta
+            property="og:url"
+            content="https:///k-drama-rate.sooyadev.com/"
+          />
           <meta property="og:type" content="website" />
           <meta name="theme-color" content="#3182CE" />
           <link rel="manifest" href="/manifest.json" />

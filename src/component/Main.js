@@ -133,12 +133,6 @@ export default function Main() {
   const router = useRouter();
   const toast = useToast();
 
-  useEffect(() => {
-    if (router.route != "/main") {
-      router.push("/main");
-    }
-  }, []);
-
   const [isLoading, setIsLoading] = useState(false);
 
   const [listData, setlistData] = useState();
@@ -209,9 +203,11 @@ export default function Main() {
           toast({
             description: "시청률 추이가 없는 드라마 입니다.",
             status: "info",
-            duration: 1000,
+            position: "top",
+            duration: 1500,
             isClosable: true,
           });
+          closePop();
           return;
         }
         let list = JSON.parse(res.data.list);
@@ -234,6 +230,7 @@ export default function Main() {
           prev[`data_${el.rank}`] = data;
           return prev;
         });
+        console.log(data);
         setTargetData(data);
       });
     }
